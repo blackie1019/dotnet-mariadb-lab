@@ -7,13 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MySqlConnector" Version="0.45.1" />
         <PackageReference Include="nunit" Version="3.10.1" />
-        <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mariadb.Lab.Core\Mariadb.Lab.Core.csproj" />
+      <ProjectReference Include="..\Mariadb.Lab.DataAccessLayer\Mariadb.Lab.DataAccessLayer.csproj" />
     </ItemGroup>
 
 </Project>
