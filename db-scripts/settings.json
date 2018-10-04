@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "name": "Local-MariaDB-Test",
+            "server": "127.0.0.1",
+            "dialect": "MySQL",
+            "port": 3306,
+            "database": "mariadb-test",
+            "username": "root",
+            "askForPassword": false,
+            "password": "pass.123",
+            "connectionTimeout": 15
+        }
+    ]
+}

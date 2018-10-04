@@ -1,0 +1,3 @@
+USE Test1;
+ALTER TABLE TestTable_01 
+MODIFY ProductPrice DECIMAL(20,8);

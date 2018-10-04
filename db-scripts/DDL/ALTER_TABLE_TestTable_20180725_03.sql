@@ -1,0 +1,2 @@
+USE Test1;
+    ALTER TABLE TestTable_01 ADD ProductCategoryId INT NOT NULL DEFAULT(0);LL DEFAULT(0);
