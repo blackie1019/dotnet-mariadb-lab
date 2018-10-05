@@ -1,4 +1,4 @@
-# dotnet-dapper-mysql-lab #
+# dotnet-mariadb-lab #
 
 ## Setup ##
 1. docker host mariadb:
