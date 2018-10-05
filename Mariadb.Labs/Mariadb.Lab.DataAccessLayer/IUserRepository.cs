@@ -10,7 +10,7 @@ namespace Mariadb.Lab.DataAccessLayer
        Task<IEnumerable<UserEntity>> GetUsers();
        Task<UserEntity> GetUserById(int id);
        Task CreateUser(UserDto inputObj);
-       Task UpdateUser(int id);
+       Task UpdateUser(UserDto inputObj);
        Task DeleteUser(int id);
     }
 }

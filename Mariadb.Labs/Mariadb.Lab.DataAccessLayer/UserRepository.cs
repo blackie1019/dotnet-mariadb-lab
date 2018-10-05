@@ -17,56 +17,67 @@ namespace Mariadb.Lab.DataAccessLayer
         {
             get { return Lazy.Value; }
         }
-        
-        private MySqlConnection _conn;
-        
+        private string _connStrinng;
+
         private UserRepository()
         {
-            var connString = "Server=localhost;User ID=root;Password=pass.123;Database=LabMariabDB";
-            _conn = new MySqlConnection(connString);
+            _connStrinng = "Server=localhost;User ID=root;Password=pass.123;Database=LabMariabDB";
         }
        
 
         public async Task<UserEntity> GetUserById(int id)
         {
-            await CheckConnectionStatus();
-
-            // Retrieve all rows
-            using (var cmd = new MySqlCommand("SELECT Id, Name, BalanceAmount, DateCreated, DateUpdated FROM User", _conn))
-            using (var reader = await cmd.ExecuteReaderAsync())
+            using (var conn = new MySqlConnection(_connStrinng))
             {
-                await reader.ReadAsync();
+                await conn.OpenAsync();
                 
-                return new UserEntity()
+                using (var cmd = new MySqlCommand())
                 {
-                    Id = reader.GetInt16(0),
-                    Name = reader.GetString(1),
-                    BalanceAmount = reader.GetDecimal(2),
-                    DateCreated = reader.GetDateTime(3),
-                    DateUpdated = reader.IsDBNull(4)?(DateTime?)null:reader.GetDateTime(4),
-                };                
+                    cmd.Connection = conn;
+                    cmd.CommandText =
+                        "SELECT Id, Name, BalanceAmount, DateCreated, DateUpdated FROM User WHERE Id = @Id";
+                    cmd.Parameters.AddWithValue("Id", id);
+
+                    var reader = await cmd.ExecuteReaderAsync();
+
+                    // Retrieve first rows
+                    await reader.ReadAsync();
+
+                    return new UserEntity()
+                    {
+                        Id = reader.GetInt16(0),
+                        Name = reader.GetString(1),
+                        BalanceAmount = reader.GetDecimal(2),
+                        DateCreated = reader.GetDateTime(3),
+                        DateUpdated = reader.IsDBNull(4) ? (DateTime?) null : reader.GetDateTime(4),
+                    };
+                }
             }
         }
 
         public async Task<IEnumerable<UserEntity>> GetUsers()
         {
             var result = new List<UserEntity>();
-            await CheckConnectionStatus();
-
-            // Retrieve all rows
-            using (var cmd = new MySqlCommand("SELECT Id, Name, BalanceAmount, DateCreated, DateUpdated FROM User", _conn))
-            using (var reader = await cmd.ExecuteReaderAsync())
+            using (var conn = new MySqlConnection(_connStrinng))
             {
-                while (await reader.ReadAsync())
+                await conn.OpenAsync();
+                
+                using (var cmd = new MySqlCommand("SELECT Id, Name, BalanceAmount, DateCreated, DateUpdated FROM User",
+                    conn))
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                   result.Add(new UserEntity()
-                   {
-                       Id = reader.GetInt16(0),
-                       Name = reader.GetString(1),
-                       BalanceAmount = reader.GetDecimal(2),
-                       DateCreated = reader.GetDateTime(3),
-                       DateUpdated = reader.IsDBNull(4)?(DateTime?)null:reader.GetDateTime(4),
-                   });
+                    // Retrieve all rows
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(new UserEntity()
+                        {
+                            Id = reader.GetInt16(0),
+                            Name = reader.GetString(1),
+                            BalanceAmount = reader.GetDecimal(2),
+                            DateCreated = reader.GetDateTime(3),
+                            DateUpdated = reader.IsDBNull(4) ? (DateTime?) null : reader.GetDateTime(4),
+                        });
+                    }
                 }
             }
 
@@ -75,36 +86,55 @@ namespace Mariadb.Lab.DataAccessLayer
 
         public async Task CreateUser(UserDto inputObj)
         {
-            await CheckConnectionStatus();
-            
-            // Insert some data
-            using (var cmd = new MySqlCommand())
+            using (var conn = new MySqlConnection(_connStrinng))
             {
-                cmd.Connection = _conn;
-                cmd.CommandText = "INSERT INTO User (Name) VALUES (@Name)";
-                cmd.Parameters.AddWithValue("Name", inputObj.Name);
-                await cmd.ExecuteNonQueryAsync();
+                await conn.OpenAsync();
+                // Insert some data
+                using (var cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "INSERT INTO User (Name) VALUES (@Name)";
+                    cmd.Parameters.AddWithValue("Name", inputObj.Name);
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
         }
 
-        public Task UpdateUser(int id)
+        public async Task UpdateUser(UserDto inputObj)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteUser(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task CheckConnectionStatus()
-        {
-                        
-            if (_conn.State != ConnectionState.Open)
+            using (var conn = new MySqlConnection(_connStrinng))
             {
-                await _conn.OpenAsync();
+                await conn.OpenAsync();
+                
+                // Insert some data
+                using (var cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText =
+                        "UPDATE User SET Name = @Name, BalanceAmount = @BalanceAmount, DateUpdated = NOW() WHERE Id = @Id";
+                    cmd.Parameters.AddWithValue("Name", inputObj.Name);
+                    cmd.Parameters.AddWithValue("BalanceAmount", inputObj.BalanceAmount);
+                    cmd.Parameters.AddWithValue("Id", inputObj.Id);
+                    await cmd.ExecuteNonQueryAsync();
+                }
             }
-
+        }
+        public async Task DeleteUser(int id)
+        {
+            using (var conn = new MySqlConnection(_connStrinng))
+            {
+                await conn.OpenAsync();
+                
+                // Insert some data
+                using (var cmd = new MySqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText =
+                        "DELETE FROM User WHERE Id = @Id";
+                    cmd.Parameters.AddWithValue("Id", id);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
         }
     }
 }
