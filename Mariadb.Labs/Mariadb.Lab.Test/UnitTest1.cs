@@ -100,5 +100,18 @@ namespace Tests
             
             Assert.AreEqual(expectedUserCount,currentUserCount);
         }
+         
+        [Test]
+        public void Test_GetUserCountBySPWithReturnValue()
+        {
+            // Arrange
+            var totalAmount  = UserRepository.Instance.GetUsers().Result.Count();
+            
+            // Act
+            var result = UserRepository.Instance.GetUserCountBySPWithReturnValue().Result;
+            
+            // Assert
+            Assert.AreEqual(totalAmount,result);
+        }
     }
 }

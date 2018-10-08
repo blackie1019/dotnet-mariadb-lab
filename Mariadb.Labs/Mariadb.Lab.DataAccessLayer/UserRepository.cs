@@ -106,7 +106,7 @@ namespace Mariadb.Lab.DataAccessLayer
             {
                 await conn.OpenAsync();
                 
-                // Insert some data
+                // Update some data
                 using (var cmd = new MySqlCommand())
                 {
                     cmd.Connection = conn;
@@ -119,13 +119,14 @@ namespace Mariadb.Lab.DataAccessLayer
                 }
             }
         }
+        
         public async Task DeleteUser(int id)
         {
             using (var conn = new MySqlConnection(_connStrinng))
             {
                 await conn.OpenAsync();
                 
-                // Insert some data
+                // Delete data
                 using (var cmd = new MySqlCommand())
                 {
                     cmd.Connection = conn;
@@ -133,6 +134,49 @@ namespace Mariadb.Lab.DataAccessLayer
                         "DELETE FROM User WHERE Id = @Id";
                     cmd.Parameters.AddWithValue("Id", id);
                     await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<int> GetUserCountBySPWithOutputValue()
+        {
+            using (var conn = new MySqlConnection(_connStrinng))
+            {
+                await conn.OpenAsync();
+                // Calling SP with output
+                using (var cmd = new MySqlCommand())
+                {
+                    var parameter = new MySqlParameter("@param1",MySqlDbType.Int32);
+                    parameter.Direction = ParameterDirection.Output;
+                    
+                    cmd.Connection = conn;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "QUERY_USERS_COUNT";
+                    cmd.Parameters.Add(parameter);
+                    
+                    await cmd.ExecuteNonQueryAsync();
+
+                    return Convert.ToInt32(parameter.Value);
+                }
+            }
+        }
+        
+        public async Task<int> GetUserCountBySPWithReturnValue()
+        {
+            using (var conn = new MySqlConnection(_connStrinng))
+            {
+                await conn.OpenAsync();
+                // Calling SP with return value
+                using (var cmd = new MySqlCommand())
+                {
+                    
+                    cmd.Connection = conn;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = "QUERY_USERS_COUNT_WITH_RETURNVALUE";
+                    
+                    var reader = await cmd.ExecuteReaderAsync();
+                    await reader.ReadAsync();
+                    return reader.GetInt32(0);
                 }
             }
         }

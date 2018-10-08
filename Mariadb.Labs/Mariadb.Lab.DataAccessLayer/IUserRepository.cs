@@ -12,5 +12,7 @@ namespace Mariadb.Lab.DataAccessLayer
        Task CreateUser(UserDto inputObj);
        Task UpdateUser(UserDto inputObj);
        Task DeleteUser(int id);
+       Task<int> GetUserCountBySPWithOutputValue();
+       Task<int> GetUserCountBySPWithReturnValue();
     }
 }
