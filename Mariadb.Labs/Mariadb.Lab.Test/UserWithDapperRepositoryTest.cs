@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using Mariadb.Lab.DataAccessLayer;
 using Mariadb.Lab.DataAccessLayer.DataTransferObjects;
-using Mariadb.Lab.DataAccessLayer.Entities;
 using NUnit.Framework;
 
-namespace Tests
+namespace Mariadb.Lab.Test
 {
-    public class Tests
+    public class UserWithDapperRepositoryTest
     {
         [SetUp]
         public void Setup()
