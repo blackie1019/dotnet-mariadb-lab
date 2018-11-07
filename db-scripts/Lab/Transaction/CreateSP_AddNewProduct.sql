@@ -1,0 +1,7 @@
+DELIMITER //
+CREATE PROCEDURE AddNewUser(IN userName NVARCHAR(40))
+  BEGIN
+    INSERT INTO User(User.Name) VALUES (userName);
+  END
+//
+DELIMITER ;
